@@ -2,33 +2,55 @@ const express = require("express");
 const router = express.Router();
 
 const {
-    addUser, becomeModerator
+    isModerator, becomeModerator, addUser
 } = require('../controllers/userRole')
 
 
-router.get("/addUser/:email", (req, res) => {
+router.get("/isModerator/:email", (req, res) => {
     let email = req.params.email;
-    addUser(email).then(respuestaDB => {
+    isModerator(email).then(respuestaDB => {
         res.send({
             ok: true,
-            info: {},
-            mensaje: 'Usuario añadido correctamente'
+            isModerator: respuestaDB,
+            mensaje: 'Consulta exitosa'
         })
     }).catch(error => {
         res.send(error)
     })
 })
 
-router.post("/becoMotor/:email", (req, res) => {
+router.post("/becoMotor/:email", async function (req, res) {
     let email = req.params.email;
-    becomeModerator(email).then(respuestaDB => {
+    let respuestaDB = await becomeModerator(email)
+
+    if (respuestaDB === true) {
         res.send({
             ok: true,
             mensaje: `El usuario ${email} se ha convertido en moderador`
         })
-    }).catch(error => {
-        res.send(error)
-    })
+    } else {
+        res.send({
+            ok: false,
+            mensaje: `El usuario ${email} no se encuentra registrado`
+        })
+    }
 })
 
+router.post("/addUser/:email", async function (req, res) {
+    let email = req.params.email;
+    
+    let respuestaDB = await addUser(email)
+
+    if (respuestaDB === true) {
+        res.send({
+            ok: true,
+            mensaje: `El usuario ${email} registrado como estudiante`
+        })
+    } else {
+        res.send({
+            ok: false,
+            mensaje: `El usuario ${email} no se encuentra registrado`
+        })
+    }
+})
 module.exports = router
