@@ -7,7 +7,14 @@ admin.initializeApp({
 });
 const db = admin.firestore();
 
-async function isModerator(email){
+async function getRoles(email){
+    const dbRef = db.collection('users').doc(email)
+    const roles = await dbRef.get()
+    return roles
+}
+
+
+async function isModerator(email) {
     const dbRef = db.collection('users')
     const snapshot = await dbRef.where('moderator', '==', true).get();
     if (snapshot.empty) {
@@ -21,7 +28,7 @@ async function isModerator(email){
     return arDoc.includes(email)
 }
 
-async function becomeModerator(email){
+async function becomeModerator(email) {
 
     const docRef = await db.collection("users").doc(email);
     var sucess = false
@@ -43,21 +50,23 @@ async function becomeModerator(email){
     return sucess
 }
 
-async function addUser(email){
+async function addUser(email) {
 
     const docRef = await db.collection("users").doc(email);
     var sucess = false
     await docRef.get().then((doc) => {
         if (doc.exists) {
+            console.log("El usuario ya se encuentra registrado")
+            sucess = false
+        } else {
             docRef.set({
                 moderator: false,
                 manager: false,
                 student: true,
                 teacher: false
             })
+            console.log("Registrando usuario")
             sucess = true
-        } else {
-            sucess = false
         }
     }).catch((error) => {
         console.log(error)
@@ -66,5 +75,5 @@ async function addUser(email){
 }
 
 module.exports = {
-    isModerator, becomeModerator, addUser
+    isModerator, becomeModerator, addUser, getRoles
 }
