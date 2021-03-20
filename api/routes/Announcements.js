@@ -8,6 +8,7 @@ const {
 
 router.post("/createAnnouncement", (req,res)=>{
     let announcement = req.body;
+    console.log(announcement)
     createAnnouncement(announcement).then(resDB => {
         res.send({
             ok: resDB,
