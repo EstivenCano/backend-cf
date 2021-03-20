@@ -11,8 +11,9 @@ app.get("/",(req,res) => {
 })
 
 const route_UserRole = require('./routes/userRole')
+const route_Announcements = require('./routes/Announcements')
 
-app.use(route_UserRole)
+app.use(route_UserRole, route_Announcements)
 
 const PORT = 3001;
 

@@ -2,16 +2,29 @@ const express = require("express");
 const router = express.Router();
 
 const {
-    isModerator, becomeModerator, addUser
+    isModerator, becomeModerator, addUser, getRoles
 } = require('../controllers/userRole')
 
 
-router.get("/isModerator/:email", (req, res) => {
+router.get("/roles/:email", (req,res)=>{
     let email = req.params.email;
-    isModerator(email).then(respuestaDB => {
+    getRoles(email).then(resDB => {
         res.send({
             ok: true,
-            isModerator: respuestaDB,
+            roles: resDB,
+            mensaje: "Roles de usuario consultado"
+        })
+    }).catch(error => {
+        res.send(error)
+    })
+})
+
+router.get("/isModerator/:email", (req, res) => {
+    let email = req.params.email;
+    isModerator(email).then(resDB => {
+        res.send({
+            ok: true,
+            isModerator: resDB,
             mensaje: 'Consulta exitosa'
         })
     }).catch(error => {
@@ -21,9 +34,9 @@ router.get("/isModerator/:email", (req, res) => {
 
 router.post("/becoMotor/:email", async function (req, res) {
     let email = req.params.email;
-    let respuestaDB = await becomeModerator(email)
+    let resDB = await becomeModerator(email)
 
-    if (respuestaDB === true) {
+    if (resDB === true) {
         res.send({
             ok: true,
             mensaje: `El usuario ${email} se ha convertido en moderador`
@@ -39,17 +52,17 @@ router.post("/becoMotor/:email", async function (req, res) {
 router.post("/addUser/:email", async function (req, res) {
     let email = req.params.email;
     
-    let respuestaDB = await addUser(email)
+    let resDB = await addUser(email)
 
-    if (respuestaDB === true) {
+    if (resDB === true) {
         res.send({
             ok: true,
-            mensaje: `El usuario ${email} registrado como estudiante`
+            mensaje: `El usuario ${email} ha sido registrado como estudiante`
         })
     } else {
         res.send({
             ok: false,
-            mensaje: `El usuario ${email} no se encuentra registrado`
+            mensaje: `El usuario ${email} ya se encuentra registrado`
         })
     }
 })
