@@ -18,6 +18,7 @@ async function createAnnouncement(announcement) {
     }
 }
 
+
 async function getAnnouncement() {
     const dbRef = db.collection('announcements')
     const snapshot = await dbRef.get();
