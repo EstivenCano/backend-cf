@@ -56,7 +56,6 @@ async function addUser(email) {
     var sucess = false
     await docRef.get().then((doc) => {
         if (doc.exists) {
-            console.log("El usuario ya se encuentra registrado")
             sucess = false
         } else {
             docRef.set({

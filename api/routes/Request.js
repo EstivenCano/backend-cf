@@ -3,17 +3,15 @@ const router = express.Router();
 
 
 const {
-    createRequest
+    createRequest, getRequests, getRequestDocuments
 } = require('../controllers/Request')
 
 router.post("/createRequest", (req,res)=>{
     let request = req.body.applyForm;
-    let id_convocatoria = req.body.applyInfo.id_convocatoria
-    let id_grupo = req.body.applyInfo.id_grupo
-    let materia = req.body.applyInfo.materia
-    let documento = req.body.applyForm.documento
-    
-    createRequest(request,id_convocatoria,materia,id_grupo,documento).then(resDB => {
+    let info = req.body.applyInfo;
+    console.log(request)
+    console.log(info)
+    createRequest(request,info).then(resDB => {
         res.send({
             ok: resDB,
             mensaje: "Aplicación guardada"
@@ -22,5 +20,19 @@ router.post("/createRequest", (req,res)=>{
         res.send(error)
     })
 })
+
+router.get("/getRequests", (req,res) => {
+
+    getRequests().then(resDB => {
+        res.send({
+            ok: true,
+            requests: resDB,
+            mensaje: 'Consulta exitosa'
+        })
+    }).catch(error => {
+        res.send(error)
+    })
+})
+
 
 module.exports = router
