@@ -5,6 +5,7 @@ const db = admin.firestore();
 
 async function createAnnouncement(announcement) {
     const dbRef = db.collection('announcements')
+    
     if (announcement != null && announcement.descripcion !== "" &&
         announcement.cursos.length !== 0) {
         await dbRef.doc().set(announcement
