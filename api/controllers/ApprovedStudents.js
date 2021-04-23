@@ -131,7 +131,6 @@ async function rejectEvidence(studentMail, reason) {
 
 async function approveEvidence(studentId, studentMail) {
   const approvedStudents = db.collection("approvedStudents");
-  console.log(studentId);
   if (studentId) {
     await approvedStudents
       .doc(studentId)
@@ -154,7 +153,7 @@ async function approveEvidence(studentId, studentMail) {
 
 async function getApprovedStudents() {
   const dbRef = db.collection("approvedStudents");
-  const snapshot = await dbRef.get();
+  const snapshot = await dbRef.where('evidencia', '==', false).get();
   const approved = [];
   snapshot.forEach((doc) => {
     approved.push({

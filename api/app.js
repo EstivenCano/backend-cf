@@ -14,8 +14,9 @@ const route_UserRole = require('./routes/userRole')
 const route_Announcements = require('./routes/Announcements')
 const route_Request = require('./routes/Request')
 const route_Approved = require('./routes/ApprovedStudents')
+const route_Teacher = require('./routes/Teacher')
 
-app.use(route_UserRole, route_Announcements, route_Request, route_Approved)
+app.use(route_UserRole, route_Announcements, route_Request, route_Approved, route_Teacher)
 
 const PORT = 3001;
 
