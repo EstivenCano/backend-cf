@@ -7,7 +7,7 @@ const db = admin.firestore();
 const mail = new MailService();
 const file = new FileService();
 
-const sendMail = async (student) => {
+const approveMail = async (student) => {
   try {
     let template = file.readFile("templates/approve.html").toString();
 
@@ -42,6 +42,37 @@ const rejectMail = async (student, reason) => {
   }
 };
 
+const rejectEMail = async (studentMail, reason) => {
+  try {
+    let template = file.readFile("templates/eReject.html").toString();
+    template = template.replace("razon", reason);
+
+    let response = mail.sendMail(
+      template,
+      studentMail,
+      "Evidencia rechazada"
+    );
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const approveEMail = async (studentMail) => {
+  try {
+    let template = file.readFile("templates/eApprove.html").toString();
+
+    let response = mail.sendMail(
+      template,
+      studentMail,
+      "Evidencia aprobada"
+    );
+    return response;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 async function addApprovedStudent(student, requestId) {
   const dbRef = db.collection("approvedStudents");
   const request = db.collection("requests");
@@ -59,7 +90,7 @@ async function addApprovedStudent(student, requestId) {
           });
       })
       .then(() => {
-        sendMail(student);
+        approveMail(student);
       })
       .catch((err) => {
         console.log(err);
@@ -90,12 +121,46 @@ async function rejectStudent(student, requestId, reason) {
   }
 }
 
+async function rejectEvidence(studentMail, reason) {
+  if (studentMail) {
+    rejectEMail(studentMail,reason)
+  } else {
+    console.log("No fue posible aprobar la evidencia del estudiante");
+  }
+}
+
+async function approveEvidence(studentId, studentMail) {
+  const approvedStudents = db.collection("approvedStudents");
+  console.log(studentId);
+  if (studentId) {
+    await approvedStudents
+      .doc(studentId)
+      .update({
+        evidencia: true,
+      })
+      .then(() => {
+        console.log("Evidencia aprobado registrado!");
+      })
+      .then(() => {
+        approveEMail(studentMail);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else {
+    console.log("No fue posible aprobar la evidencia del estudiante");
+  }
+}
+
 async function getApprovedStudents() {
   const dbRef = db.collection("approvedStudents");
   const snapshot = await dbRef.get();
   const approved = [];
   snapshot.forEach((doc) => {
-    approved.push(doc.data());
+    approved.push({
+      id: doc.id,
+      data: doc.data(),
+    });
   });
   return approved;
 }
@@ -103,5 +168,7 @@ async function getApprovedStudents() {
 module.exports = {
   addApprovedStudent,
   getApprovedStudents,
+  approveEvidence,
+  rejectEvidence,
   rejectStudent,
 };
